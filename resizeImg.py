@@ -29,6 +29,6 @@ def segmentation(image):
 small = resizeImg(img)
 gray = RGBtoGray(small)
 segImg = segmentation(gray)
-#cv2.imwrite('test.jpg',gray)
+cv2.imwrite('test.jpg',gray)
 cv2.imshow('Hasil',segImg)
 cv2.waitKey(0)
