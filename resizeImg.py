@@ -8,7 +8,7 @@ Created on Mon Sep 17 12:10:59 2018
 import cv2
 
 #file('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\_001. Donat\\001_0001_XiaomiRedmiNote4X.jpg')
-img = cv2.imread('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Dataset Awal\\015_0003_XiaomiRedmiNote4X.jpg')
+img = cv2.imread('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Dataset Awal\\016_0007_XiaomiRedmiNote4X.jpg')
 #PREPROSESING
 def resizeImg(image):
     #img = cv2.imread(filename)
