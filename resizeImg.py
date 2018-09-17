@@ -6,9 +6,10 @@ Created on Mon Sep 17 12:10:59 2018
 """
 
 import cv2
+import os
 
 #file('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\_001. Donat\\001_0001_XiaomiRedmiNote4X.jpg')
-img = cv2.imread('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Dataset Awal\\016_0007_XiaomiRedmiNote4X.jpg')
+
 #PREPROSESING
 def resizeImg(image):
     #img = cv2.imread(filename)
@@ -20,15 +21,71 @@ def RGBtoGray(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return gray
 
-def segmentation(image):
+def gaussianSegmentation(image):
+    #no, segImg = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU)
+    segImg = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+    return segImg
+
+def otsuSegmentation(image):
     no, segImg = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU)
+    #segImg = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
     return segImg
 
 #filename = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\_001. Donat\\001_0001_XiaomiRedmiNote4X.jpg'
-
-small = resizeImg(img)
-gray = RGBtoGray(small)
-segImg = segmentation(gray)
-cv2.imwrite('test.jpg',gray)
-cv2.imshow('Hasil',segImg)
+i = 0
+for filename in os.listdir("D:\\KULIAH\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Satu Satu\\"):
+    if(i < 1):
+        #img = cv2.imread('D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Dataset Awal\\002_0001_XiaomiRedmiNote4X.jpg')
+        strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Dataset Awal\\'+filename
+        img = cv2.imread(strFile)
+        
+        small = resizeImg(img)        
+        smalla = cv2.bilateralFilter(small,9,75,75)
+        smallb = cv2.bilateralFilter(smalla,9,75,75)
+        gray = RGBtoGray(smallb)
+        segImg = gaussianSegmentation(gray)
+        
+        #seg2 = otsuSegmentation(segImg)
+        median = cv2.medianBlur(segImg,5)
+        #closing = cv2.morphologyEx(median, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        erosion = cv2.erode(median,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations = 25)
+        erosion = cv2.dilate(erosion,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations = 25)
+        erosion = cv2.erode(median,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations = 25)
+        erosion = cv2.dilate(erosion,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations = 25)
+        
+        
+        #closing = cv2.morphologyEx(median, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        #closing = cv2.morphologyEx(closing, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        #closing = cv2.morphologyEx(closing, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        #closing = cv2.morphologyEx(closing, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        #closing = cv2.morphologyEx(closing, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT,(5,5)))
+        
+        
+        cv2.imwrite('test.jpg',gray)
+        blueImage = small.copy()
+        blueImage[:,:,1] = 0
+        blueImage[:,:,2] = 0
+        greenImage = small.copy()
+        greenImage[:,:,0] = 0
+        greenImage[:,:,2] = 0
+        redImage = small.copy()
+        redImage[:,:,0] = 0
+        redImage[:,:,1] = 0
+        
+        result = small.copy()
+        result[erosion == 255] = (255, 255, 255)
+        
+        i += 1
+        #cv2.imshow('Asli'+str(i),small)        
+        
+        #cv2.imshow('Blur',smalla)
+        #cv2.imshow('Gray',gray)
+        cv2.imshow('Gaussian',erosion)
+        cv2.imshow('Gaussian2',median)
+        #cv2.imshow('Median'+str(i),median)
+        #cv2.imshow('Closing'+str(i),erosion)
+        cv2.imshow('hasil',result)
+        #cv2.imshow('RED',redImage)
+        #cv2.imshow('GREEN',greenImage)
+        #cv2.imshow('BLUE',blueImage)
 cv2.waitKey(0)
