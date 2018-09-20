@@ -137,21 +137,40 @@ meanL = meanMoment(Lab[:,:,0])
 varL = varianceMoment(Lab[:,:,0], meanL)
 skewL = skewnessMoment(Lab[:,:,0], meanL)
 
-meanLLib = meanMoment(labLibrary[:,:,0])
-varLLib = varianceMoment(labLibrary[:,:,0], meanLLib)
-skewLLib = skewnessMoment(labLibrary[:,:,0], meanLLib)
+meanA = meanMoment(Lab[:,:,1])
+varA = varianceMoment(Lab[:,:,1], meanA)
+skewA = skewnessMoment(Lab[:,:,1], meanA)
 
-print(meanL)
-print(varL)
-print(skewL)
-print(meanLLib)
-print(varLLib)
-print(skewLLib)
+meanB = meanMoment(Lab[:,:,2])
+varB = varianceMoment(Lab[:,:,2], meanB)
+skewB = skewnessMoment(Lab[:,:,2], meanB)
+
+
+#meanLLib = meanMoment(labLibrary[:,:,0])
+#varLLib = varianceMoment(labLibrary[:,:,0], meanLLib)
+#skewLLib = skewnessMoment(labLibrary[:,:,0], meanLLib)
+
+#print(meanL)
+#print(varL)
+#print(skewL)
+#print(meanLLib)
+#print(varLLib)
+#print(skewLLib)
 
 #meanA = meanMoment(Lab[:,:,1])
 #meanB = meanMoment(Lab[:,:,2])
 
-
+fiturWarna = []
+fiturWarna.append(meanL)
+fiturWarna.append(varL)
+fiturWarna.append(skewL)
+fiturWarna.append(meanA)
+fiturWarna.append(varA)
+fiturWarna.append(skewA)
+fiturWarna.append(meanB)
+fiturWarna.append(varB)
+fiturWarna.append(skewB)
+print(fiturWarna)
 
 
 #cv2.imshow('HASIL',lab)
