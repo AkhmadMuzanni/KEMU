@@ -18,8 +18,8 @@ for i in range(len(weightMatrix)):
         weightMatrix[i][j] = dataClass[i][0][j]
 
 
-
-iterasi = 15
+# ITERATION LVQ
+iterasi = 50
 for x in range(iterasi):
     
     # Find Manhattan Distance
@@ -52,6 +52,19 @@ for x in range(iterasi):
                         weightMatrix[j][k] = (1+alpha)*weightMatrix[j][k] - alpha*dataTraining[i][0][k]
     alpha = 0.8*alpha
             
+# Validation
+#dataTest = [0.0,0.0,1.0,1.0]
+#dataTest = [1.0,0.0,0.0,0.0]
+dataTest = [0.0,1.0,1.0,0.0]
+classResult = 0
+minValue = 99999
+for i in range(len(weightMatrix)):
+    sumValue = 0
+    for j in range(len(weightMatrix[i])):
+        sumValue += np.power(dataTest[j] - weightMatrix[i][j],2)
+    if (sumValue < minValue):
+        minValue = sumValue
+        classResult = i
+print('Class Result = '+str(classResult))
+    
 
-print(dataClass)
-print(dataTraining)
