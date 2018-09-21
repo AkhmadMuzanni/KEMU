@@ -130,136 +130,114 @@ def correlation(probMatrix, meanX, meanY, varX, varY):
     return sumTotal
 
 
-strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Satu Satu\\001_0001_XiaomiRedmiNote4X.jpg'
-rgbImg = cv2.imread(strFile)
-rgbImg = resizeImg(rgbImg)
+def getCoMatrix(rgbImg):
+    grayImg = RGBtoGray(rgbImg)
+    
+    coMatrix0 = np.zeros((255,255), dtype=int)
+    # degree 0
+    for i in range(len(grayImg)):
+        for j in range(len(grayImg[i])):
+            if (getValue(i, j+1, grayImg) != -1):
+                coMatrix0[getValue(i,j,grayImg)][getValue(i,j+1,grayImg)] += 1
+    
+    coMatrix45 = np.zeros((255,255), dtype=int)
+    # degree 45
+    for i in range(len(grayImg)):
+        for j in range(len(grayImg[i])):
+            if (getValue(i-1, j+1, grayImg) != -1):
+                coMatrix45[getValue(i,j,grayImg)][getValue(i-1,j+1,grayImg)] += 1
+    
+    coMatrix90 = np.zeros((255,255), dtype=int)
+    # degree 90
+    for i in range(len(grayImg)):
+        for j in range(len(grayImg[i])):
+            if (getValue(i-1, j, grayImg) != -1):
+                coMatrix90[getValue(i,j,grayImg)][getValue(i-1,j,grayImg)] += 1
+    
+    coMatrix135 = np.zeros((255,255), dtype=int)
+    # degree 135
+    for i in range(len(grayImg)):
+        for j in range(len(grayImg[i])):
+            if (getValue(i-1, j-1, grayImg) != -1):
+                coMatrix135[getValue(i,j,grayImg)][getValue(i-1,j-1,grayImg)] += 1
+    return coMatrix0, coMatrix45, coMatrix90, coMatrix135
 
-grayImg = RGBtoGray(rgbImg)
+def getFeature(coMatrix, sumCoMatrix):
+    probMatrix = getProbMatrix(coMatrix, sumCoMatrix)
+    meanXF = meanX(probMatrix)
+    meanYF = meanY(probMatrix)
+    varXF = variansX(probMatrix, meanXF)
+    varYF = variansY(probMatrix, meanYF)
+    energyF = energy(probMatrix)
+    entropyF = energy(probMatrix)
+    contrastF = contrast(probMatrix)
+    dissimilarityF = dissimilarity(probMatrix)
+    homogeneityF = homogeneity(probMatrix)
+    correlationF = correlation(probMatrix, meanXF, meanYF, varXF, varYF)
+    return meanXF, meanYF, varXF, varYF, energyF, entropyF, contrastF, dissimilarityF, homogeneityF, correlationF
 
-coMatrix0 = np.zeros((255,255), dtype=int)
-# degree 0
-for i in range(len(grayImg)):
-    for j in range(len(grayImg[i])):
-        if (getValue(i, j+1, grayImg) != -1):
-            coMatrix0[getValue(i,j,grayImg)][getValue(i,j+1,grayImg)] += 1
+#strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Satu Satu\\001_0001_XiaomiRedmiNote4X.jpg'
+#rgbImg = cv2.imread(strFile)
+#rgbImg = resizeImg(rgbImg)
 
-coMatrix45 = np.zeros((255,255), dtype=int)
-# degree 45
-for i in range(len(grayImg)):
-    for j in range(len(grayImg[i])):
-        if (getValue(i-1, j+1, grayImg) != -1):
-            coMatrix45[getValue(i,j,grayImg)][getValue(i-1,j+1,grayImg)] += 1
+#coMatrix0, coMatrix45, coMatrix90, coMatrix135 = getCoMatrix(rgbImg)
 
-coMatrix90 = np.zeros((255,255), dtype=int)
-# degree 90
-for i in range(len(grayImg)):
-    for j in range(len(grayImg[i])):
-        if (getValue(i-1, j, grayImg) != -1):
-            coMatrix90[getValue(i,j,grayImg)][getValue(i-1,j,grayImg)] += 1
+#sumCoMatrix = sumCM(coMatrix0)
 
-coMatrix135 = np.zeros((255,255), dtype=int)
-# degree 135
-for i in range(len(grayImg)):
-    for j in range(len(grayImg[i])):
-        if (getValue(i-1, j-1, grayImg) != -1):
-            coMatrix135[getValue(i,j,grayImg)][getValue(i-1,j-1,grayImg)] += 1
+    
+#probMatrix0 = getProbMatrix(coMatrix0, sumCoMatrix)
+#meanX0 = meanX(probMatrix0)
+#meanY0 = meanY(probMatrix0)
+#varX0 = variansX(probMatrix0, meanX0)
+#varY0 = variansY(probMatrix0, meanY0)
+#energy0 = energy(probMatrix0)
+#entropy0 = energy(probMatrix0)
+#contrast0 = contrast(probMatrix0)
+#dissimilarity0 = dissimilarity(probMatrix0)
+#homogeneity0 = homogeneity(probMatrix0)
+#correlation0 = correlation(probMatrix0, meanX0, meanY0, varX0, varY0)
 
-sumCoMatrix = sumCM(coMatrix0)
+#meanX0, meanY0, varX0, varY0, energy0, entropy0, contrast0, dissimilarity0, homogeneity0, correlation0 = getFeature(coMatrix0, sumCoMatrix)
+#meanX45, meanY45, varX45, varY45, energy45, entropy45, contrast45, dissimilarity45, homogeneity45, correlation45 = getFeature(coMatrix45, sumCoMatrix)
+#meanX90, meanY90, varX90, varY90, energy90, entropy90, contrast90, dissimilarity90, homogeneity90, correlation90 = getFeature(coMatrix90, sumCoMatrix)
+#meanX135, meanY135, varX135, varY135, energy135, entropy135, contrast135, dissimilarity135, homogeneity135, correlation135 = getFeature(coMatrix135, sumCoMatrix)
 
-probMatrix0 = getProbMatrix(coMatrix0, sumCoMatrix)
-meanX0 = meanX(probMatrix0)
-meanY0 = meanY(probMatrix0)
-varX0 = variansX(probMatrix0, meanX0)
-varY0 = variansY(probMatrix0, meanY0)
-energy0 = energy(probMatrix0)
-entropy0 = energy(probMatrix0)
-contrast0 = contrast(probMatrix0)
-dissimilarity0 = dissimilarity(probMatrix0)
-homogeneity0 = homogeneity(probMatrix0)
-correlation0 = correlation(probMatrix0, meanX0, meanY0, varX0, varY0)
+#probMatrix45 = getProbMatrix(coMatrix45, sumCoMatrix)
+#meanX45 = meanX(probMatrix45)
+#meanY45 = meanY(probMatrix45)
+#varX45 = variansX(probMatrix45, meanX45)
+#varY45 = variansY(probMatrix45, meanY45)
+#energy45 = energy(probMatrix45)
+#entropy45 = energy(probMatrix45)
+#contrast45 = contrast(probMatrix45)
+#dissimilarity45 = dissimilarity(probMatrix45)
+#homogeneity45 = homogeneity(probMatrix45)
+#correlation45 = correlation(probMatrix45, meanX45, meanY45, varX45, varY45)
 
-probMatrix45 = getProbMatrix(coMatrix45, sumCoMatrix)
-meanX45 = meanX(probMatrix45)
-meanY45 = meanY(probMatrix45)
-varX45 = variansX(probMatrix45, meanX45)
-varY45 = variansY(probMatrix45, meanY45)
-energy45 = energy(probMatrix45)
-entropy45 = energy(probMatrix45)
-contrast45 = contrast(probMatrix45)
-dissimilarity45 = dissimilarity(probMatrix45)
-homogeneity45 = homogeneity(probMatrix45)
-correlation45 = correlation(probMatrix45, meanX45, meanY45, varX45, varY45)
+#probMatrix90 = getProbMatrix(coMatrix90, sumCoMatrix)
+#meanX90 = meanX(probMatrix90)
+#meanY90 = meanY(probMatrix90)
+#varX90 = variansX(probMatrix90, meanX90)
+#varY90 = variansY(probMatrix90, meanY90)
+#energy90 = energy(probMatrix90)
+#entropy90 = energy(probMatrix90)
+#contrast90 = contrast(probMatrix90)
+#dissimilarity90 = dissimilarity(probMatrix90)
+#homogeneity90 = homogeneity(probMatrix90)
+#correlation90 = correlation(probMatrix90, meanX90, meanY90, varX90, varY90)
 
-probMatrix90 = getProbMatrix(coMatrix90, sumCoMatrix)
-meanX90 = meanX(probMatrix90)
-meanY90 = meanY(probMatrix90)
-varX90 = variansX(probMatrix90, meanX90)
-varY90 = variansY(probMatrix90, meanY90)
-energy90 = energy(probMatrix90)
-entropy90 = energy(probMatrix90)
-contrast90 = contrast(probMatrix90)
-dissimilarity90 = dissimilarity(probMatrix90)
-homogeneity90 = homogeneity(probMatrix90)
-correlation90 = correlation(probMatrix90, meanX90, meanY90, varX90, varY90)
+#probMatrix135 = getProbMatrix(coMatrix135, sumCoMatrix)
+#meanX135 = meanX(probMatrix135)
+#meanY135 = meanY(probMatrix135)
+#varX135 = variansX(probMatrix135, meanX135)
+#varY135 = variansY(probMatrix135, meanY135)
+#energy135 = energy(probMatrix135)
+#entropy135 = energy(probMatrix135)
+#contrast135 = contrast(probMatrix135)
+#dissimilarity135 = dissimilarity(probMatrix135)
+#homogeneity135 = homogeneity(probMatrix135)
+#correlation135 = correlation(probMatrix135, meanX135, meanY135, varX135, varY135)
 
-probMatrix135 = getProbMatrix(coMatrix135, sumCoMatrix)
-meanX135 = meanX(probMatrix135)
-meanY135 = meanY(probMatrix135)
-varX135 = variansX(probMatrix135, meanX135)
-varY135 = variansY(probMatrix135, meanY135)
-energy135 = energy(probMatrix135)
-entropy135 = energy(probMatrix135)
-contrast135 = contrast(probMatrix135)
-dissimilarity135 = dissimilarity(probMatrix135)
-homogeneity135 = homogeneity(probMatrix135)
-correlation135 = correlation(probMatrix135, meanX135, meanY135, varX135, varY135)
-
-fiturTekstur = []
-fiturTekstur.append(meanX0)
-fiturTekstur.append(meanY0)
-fiturTekstur.append(varX0)
-fiturTekstur.append(varY0)
-fiturTekstur.append(energy0)
-fiturTekstur.append(entropy0)
-fiturTekstur.append(contrast0)
-fiturTekstur.append(dissimilarity0)
-fiturTekstur.append(homogeneity0)
-fiturTekstur.append(correlation0)
-
-fiturTekstur.append(meanX45)
-fiturTekstur.append(meanY45)
-fiturTekstur.append(varX45)
-fiturTekstur.append(varY45)
-fiturTekstur.append(energy45)
-fiturTekstur.append(entropy45)
-fiturTekstur.append(contrast45)
-fiturTekstur.append(dissimilarity45)
-fiturTekstur.append(homogeneity45)
-fiturTekstur.append(correlation45)
-
-fiturTekstur.append(meanX90)
-fiturTekstur.append(meanY90)
-fiturTekstur.append(varX90)
-fiturTekstur.append(varY90)
-fiturTekstur.append(energy90)
-fiturTekstur.append(entropy90)
-fiturTekstur.append(contrast90)
-fiturTekstur.append(dissimilarity90)
-fiturTekstur.append(homogeneity90)
-fiturTekstur.append(correlation90)
-
-fiturTekstur.append(meanX135)
-fiturTekstur.append(meanY135)
-fiturTekstur.append(varX135)
-fiturTekstur.append(varY135)
-fiturTekstur.append(energy135)
-fiturTekstur.append(entropy135)
-fiturTekstur.append(contrast135)
-fiturTekstur.append(dissimilarity135)
-fiturTekstur.append(homogeneity135)
-fiturTekstur.append(correlation135)
-
-print(fiturTekstur)
 
 
 #print(CM)
@@ -269,5 +247,5 @@ print(fiturTekstur)
 
        
 
-cv2.imshow('HASIL',grayImg)
-cv2.waitKey(0)
+#cv2.imshow('HASIL',grayImg)
+#cv2.waitKey(0)

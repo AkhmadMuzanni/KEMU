@@ -8,7 +8,7 @@ Created on Tue Sep 18 23:49:20 2018
 import cv2
 import numpy as np
 #import os
-
+th = 0.008856
 def resizeImg(image):
     #img = cv2.imread(filename)
     small = cv2.resize(image, (0,0),fx=0.1,fy=0.1)
@@ -68,82 +68,94 @@ def skewnessMoment(channel, meanChannel):
 strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Segmentasi\\1.jpg'
 rgbImg = cv2.imread(strFile)
 
-rgbImgFloat = rgbImg.astype(np.float64)
-blueNorm = np.zeros_like(rgbImgFloat[:,:,0])
-greenNorm = np.zeros_like(rgbImgFloat[:,:,1])
-redNorm = np.zeros_like(rgbImgFloat[:,:,2])
-#blueNorm = 0
-#greenNorm = 0
-#redNorm = 0
-#blueNorm = normalize(rgbImgFloat[:,:,0])
-cv2.normalize(rgbImgFloat[:,:,0],  blueNorm, 0, 1, cv2.NORM_MINMAX)
-cv2.normalize(rgbImgFloat[:,:,1],  greenNorm, 0, 1, cv2.NORM_MINMAX)
-cv2.normalize(rgbImgFloat[:,:,2],  redNorm, 0, 1, cv2.NORM_MINMAX)
-
-
-#CONVERT BGR TO RGB
-merged = cv2.merge((redNorm,greenNorm,blueNorm))
-
-
-#matriksKonv = [[0.412453,0.212671,0.019334],[0.357580,0.715160,0.119193],[0.180423,0.072169,0.950227]]
-matriksKonv = np.array([[0.412453,0.357580,0.180423],[0.212671,0.715160,0.072169],[0.019334,0.119193,0.950227]])
-#matriksKonv = np.array([[0.180423,0.072169,0.950227],[0.357580,0.715160,0.119193],[0.412453,0.212671,0.019334]])
-Xn = 0.950456
-Zn = 1.088754
-th = 0.008856
-print(matriksKonv)
-#np.matmul(matriksKonv)
-
-#b = np.array([[1,2,3],[4,5,6]])
-#c = np.array([[1,2],[3,4],[5,6]])
-b = np.array([0,0,0])
-#print(np.matmul(matriksKonv,b))
-
-# CONVERT BGR TO XYZ
-xyz = merged.copy()
-for i in range(len(xyz)):
-    for j in range(len(xyz[i])):
-        xyz[i][j] = np.matmul(matriksKonv, xyz[i][j])
-        xyz[i][j][0] = xyz[i][j][0]/Xn
-        xyz[i][j][2] = xyz[i][j][2]/Zn
-
-count = 0
-Lab = np.zeros_like(xyz)
-for i in range(len(Lab)):
-    for j in range(len(Lab[i])):
-        if(xyz[i][j][1] > th):
-            Lab[i][j][0] = (116*np.cbrt(xyz[i][j][1]))-16
-        else:
-            Lab[i][j][0] = 903.3 * xyz[i][j][1]
-            count+=1
-        #Lab[i][j][0] = np.cbrt(xyz[i][j][0])
-        #Lab[i][j][1] = np.cbrt(xyz[i][j][1])
-        #Lab[i][j][2] = np.cbrt(xyz[i][j][2])
-        Lab[i][j][1] = 500 * (func(xyz[i][j][0]) - func(xyz[i][j][1]))
-        Lab[i][j][2] = 200 * (func(xyz[i][j][1]) - func(xyz[i][j][2]))
-print(count)
+def convBGRtoLAB(rgbImg):
+    rgbImgFloat = rgbImg.astype(np.float64)
+    blueNorm = np.zeros_like(rgbImgFloat[:,:,0])
+    greenNorm = np.zeros_like(rgbImgFloat[:,:,1])
+    redNorm = np.zeros_like(rgbImgFloat[:,:,2])
+    #blueNorm = 0
+    #greenNorm = 0
+    #redNorm = 0
+    #blueNorm = normalize(rgbImgFloat[:,:,0])
+    cv2.normalize(rgbImgFloat[:,:,0],  blueNorm, 0, 1, cv2.NORM_MINMAX)
+    cv2.normalize(rgbImgFloat[:,:,1],  greenNorm, 0, 1, cv2.NORM_MINMAX)
+    cv2.normalize(rgbImgFloat[:,:,2],  redNorm, 0, 1, cv2.NORM_MINMAX)
+    
+    
+    #CONVERT BGR TO RGB
+    merged = cv2.merge((redNorm,greenNorm,blueNorm))
+    
+    
+    #matriksKonv = [[0.412453,0.212671,0.019334],[0.357580,0.715160,0.119193],[0.180423,0.072169,0.950227]]
+    matriksKonv = np.array([[0.412453,0.357580,0.180423],[0.212671,0.715160,0.072169],[0.019334,0.119193,0.950227]])
+    #matriksKonv = np.array([[0.180423,0.072169,0.950227],[0.357580,0.715160,0.119193],[0.412453,0.212671,0.019334]])
+    Xn = 0.950456
+    Zn = 1.088754
+    
+    #print(matriksKonv)
+    #np.matmul(matriksKonv)
+    
+    #b = np.array([[1,2,3],[4,5,6]])
+    #c = np.array([[1,2],[3,4],[5,6]])
+    #b = np.array([0,0,0])
+    #print(np.matmul(matriksKonv,b))
+    
+    # CONVERT BGR TO XYZ
+    xyz = merged.copy()
+    for i in range(len(xyz)):
+        for j in range(len(xyz[i])):
+            xyz[i][j] = np.matmul(matriksKonv, xyz[i][j])
+            xyz[i][j][0] = xyz[i][j][0]/Xn
+            xyz[i][j][2] = xyz[i][j][2]/Zn
+    
+    count = 0
+    Lab = np.zeros_like(xyz)
+    for i in range(len(Lab)):
+        for j in range(len(Lab[i])):
+            if(xyz[i][j][1] > th):
+                Lab[i][j][0] = (116*np.cbrt(xyz[i][j][1]))-16
+            else:
+                Lab[i][j][0] = 903.3 * xyz[i][j][1]
+                count+=1
+            #Lab[i][j][0] = np.cbrt(xyz[i][j][0])
+            #Lab[i][j][1] = np.cbrt(xyz[i][j][1])
+            #Lab[i][j][2] = np.cbrt(xyz[i][j][2])
+            Lab[i][j][1] = 500 * (func(xyz[i][j][0]) - func(xyz[i][j][1]))
+            Lab[i][j][2] = 200 * (func(xyz[i][j][1]) - func(xyz[i][j][2]))
+    #print(count)
+    return Lab
 
 #Lab = visualize(Lab)
 
 
-            
+#labLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2Lab)
+#xyzLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2XYZ)
 
-
-labLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2Lab)
-xyzLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2XYZ)
 #test = cv2.cvtColor(lab, cv2.COLOR_Lab2BGR)
 
-meanL = meanMoment(Lab[:,:,0])
-varL = varianceMoment(Lab[:,:,0], meanL)
-skewL = skewnessMoment(Lab[:,:,0], meanL)
+def getColorMoment(channel):
+    meanChannel = meanMoment(channel)
+    varChannel = varianceMoment(channel, meanChannel)
+    skewChannel = skewnessMoment(channel, meanChannel)
+    return meanChannel, varChannel, skewChannel
 
-meanA = meanMoment(Lab[:,:,1])
-varA = varianceMoment(Lab[:,:,1], meanA)
-skewA = skewnessMoment(Lab[:,:,1], meanA)
+Lab = convBGRtoLAB(rgbImg)
 
-meanB = meanMoment(Lab[:,:,2])
-varB = varianceMoment(Lab[:,:,2], meanB)
-skewB = skewnessMoment(Lab[:,:,2], meanB)
+meanL, varL, skewL = getColorMoment(Lab[:,:,0])
+meanA, varA, skewA = getColorMoment(Lab[:,:,1])
+meanB, varB, skewB = getColorMoment(Lab[:,:,2])
+
+#meanL = meanMoment(Lab[:,:,0])
+#varL = varianceMoment(Lab[:,:,0], meanL)
+#skewL = skewnessMoment(Lab[:,:,0], meanL)
+
+#meanA = meanMoment(Lab[:,:,1])
+#varA = varianceMoment(Lab[:,:,1], meanA)
+#skewA = skewnessMoment(Lab[:,:,1], meanA)
+
+#meanB = meanMoment(Lab[:,:,2])
+#varB = varianceMoment(Lab[:,:,2], meanB)
+#skewB = skewnessMoment(Lab[:,:,2], meanB)
 
 
 #meanLLib = meanMoment(labLibrary[:,:,0])
