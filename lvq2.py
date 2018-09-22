@@ -10,12 +10,16 @@ dataClass = [[[1.0,1.0,0.0,0.0],0],[[0.0,0.0,0.0,1.0],1]]
 dataTraining = [[[0.0,0.0,1.0,1.0],1],[[1.0,0.0,0.0,0.0],0],[[0.0,1.0,1.0,0.0],1]]
 
 alpha = 0.1
+epsilon= 0.35
 
 # Initialize Weight Matrix
 weightMatrix = np.zeros((len(dataClass),len(dataTraining[0][0])),dtype=np.float64)
 for i in range(len(weightMatrix)):
     for j in range(len(dataTraining[i][0])):
         weightMatrix[i][j] = dataClass[i][0][j]
+
+def takeFirst(elem):
+    return elem[0]
 
 
 # ITERATION LVQ
@@ -29,7 +33,16 @@ for x in range(iterasi):
             jarak[k][i] = 0
             for j in range(len(dataTraining[i][0])):
                 jarak[k][i] += np.abs(dataTraining[i][0][j] - weightMatrix[k][j])
+
+    jMatrix = [[]] * len(dataTraining)
+    for i in range(len(dataTraining)):
+        jVal = []
+        for j in range(len(dataClass)):
+            jVal.append([jarak[j][i],j])
+        jMatrix[i] = jVal
+        jMatrix[i].sort(key=takeFirst)
     
+    '''
     # Initialize jValue
     jValue = np.zeros((len(dataTraining)),dtype=int)
     for i in range(len(jValue)):
@@ -40,22 +53,27 @@ for x in range(iterasi):
                 minValue = jarak[j][i]
                 winnerClass = j
         jValue[i] = winnerClass
+    '''
     
     for i in range(len(dataTraining)):
         for j in range(len(weightMatrix)):
             for k in range(len(weightMatrix[j])):
-                if (j == jValue[i]):
-                    if(j == dataTraining[i][1]):
-                        #print("Masuk")
+                if ((np.divide(jMatrix[i][0][0],jMatrix[i][1][0]) > (1 - epsilon)) and (np.divide(jMatrix[i][1][0],jMatrix[i][0][0]) < (1 + epsilon)) and (jMatrix[i][1][1] == dataTraining[i][1])):
+                    if(j == jMatrix[i][0][1]):
+                        weightMatrix[j][k] = (1+alpha)*weightMatrix[j][k] + alpha*dataTraining[i][0][k]
+                    elif(j == jMatrix[i][1][1]):
                         weightMatrix[j][k] = (1-alpha)*weightMatrix[j][k] + alpha*dataTraining[i][0][k]
-                    else:                        
+                elif (j == jMatrix[i][0][1]):
+                    if(j == dataTraining[i][1]):
+                        weightMatrix[j][k] = (1-alpha)*weightMatrix[j][k] + alpha*dataTraining[i][0][k]
+                    else:
                         weightMatrix[j][k] = (1+alpha)*weightMatrix[j][k] - alpha*dataTraining[i][0][k]
     alpha = 0.8*alpha
             
 # Validation
-#dataTest = [0.0,0.0,1.0,1.0]
+dataTest = [0.0,0.0,1.0,1.0]
 #dataTest = [1.0,0.0,0.0,0.0]
-dataTest = [0.0,1.0,1.0,0.0]
+#dataTest = [0.0,1.0,1.0,0.0]
 classResult = 0
 minValue = 99999
 for i in range(len(weightMatrix)):
