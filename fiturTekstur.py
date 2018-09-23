@@ -133,28 +133,28 @@ def correlation(probMatrix, meanX, meanY, varX, varY):
 def getCoMatrix(rgbImg):
     grayImg = RGBtoGray(rgbImg)
     
-    coMatrix0 = np.zeros((255,255), dtype=int)
+    coMatrix0 = np.zeros((256,256), dtype=int)
     # degree 0
     for i in range(len(grayImg)):
         for j in range(len(grayImg[i])):
             if (getValue(i, j+1, grayImg) != -1):
                 coMatrix0[getValue(i,j,grayImg)][getValue(i,j+1,grayImg)] += 1
     
-    coMatrix45 = np.zeros((255,255), dtype=int)
+    coMatrix45 = np.zeros((256,256), dtype=int)
     # degree 45
     for i in range(len(grayImg)):
         for j in range(len(grayImg[i])):
             if (getValue(i-1, j+1, grayImg) != -1):
                 coMatrix45[getValue(i,j,grayImg)][getValue(i-1,j+1,grayImg)] += 1
     
-    coMatrix90 = np.zeros((255,255), dtype=int)
+    coMatrix90 = np.zeros((256,256), dtype=int)
     # degree 90
     for i in range(len(grayImg)):
         for j in range(len(grayImg[i])):
             if (getValue(i-1, j, grayImg) != -1):
                 coMatrix90[getValue(i,j,grayImg)][getValue(i-1,j,grayImg)] += 1
     
-    coMatrix135 = np.zeros((255,255), dtype=int)
+    coMatrix135 = np.zeros((256,256), dtype=int)
     # degree 135
     for i in range(len(grayImg)):
         for j in range(len(grayImg[i])):

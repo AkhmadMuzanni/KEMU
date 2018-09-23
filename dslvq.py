@@ -136,9 +136,9 @@ for x in range(iterasi):
     alpha = 0.8*alpha
             
 # Validation
-#dataTest = [0.0,0.0,1.0,1.0]
+dataTest = [0.0,0.0,1.0,1.0]
 #dataTest = [1.0,0.0,0.0,0.0]
-dataTest = [0.0,1.0,1.0,0.0]
+#dataTest = [0.0,1.0,1.0,0.0]
 classResult = 0
 minValue = 99999
 for i in range(len(weightMatrix)):

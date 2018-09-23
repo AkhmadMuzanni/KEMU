@@ -64,9 +64,17 @@ def skewnessMoment(channel, meanChannel):
                 countValue += 1
     return np.cbrt(sumValue/countValue)
 
+def kurtosisMoment(channel, meanChannel):
+    sumValue = 0
+    countValue = 0
+    for i in range(len(channel)):
+        for j in range(len(channel[i])):
+            if(channel[i][j] < 99):
+                sumValue += np.power(channel[i][j] - meanChannel,4)
+                countValue += 1
+    return np.power(sumValue/countValue,0.25)
 
-strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Segmentasi\\1.jpg'
-rgbImg = cv2.imread(strFile)
+
 
 def convBGRtoLAB(rgbImg):
     rgbImgFloat = rgbImg.astype(np.float64)
@@ -137,7 +145,13 @@ def getColorMoment(channel):
     meanChannel = meanMoment(channel)
     varChannel = varianceMoment(channel, meanChannel)
     skewChannel = skewnessMoment(channel, meanChannel)
+    #kurtChannel = kurtosisMoment(channel, meanChannel)
     return meanChannel, varChannel, skewChannel
+    #return meanChannel, varChannel, skewChannel, kurtChannel
+'''
+strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Segmentasi\\1.jpg'
+rgbImg = cv2.imread(strFile)
+
 
 Lab = convBGRtoLAB(rgbImg)
 
@@ -187,3 +201,4 @@ print(fiturWarna)
 
 #cv2.imshow('HASIL',lab)
 #cv2.waitKey(0)
+'''
