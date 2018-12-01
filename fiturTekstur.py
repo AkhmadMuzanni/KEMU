@@ -20,7 +20,7 @@ def resizeImg(image):
     small = cv2.resize(image, (0,0),fx=0.1,fy=0.1)
     return small
 
-def getValue(i, j, grayImg):
+def getValue(i, j, grayImg):    
     if((i < 0) or (j < 0) or (i >= len(grayImg)) or (j >= len(grayImg[0]))):
         return -1
     else:
@@ -132,54 +132,64 @@ def correlation(probMatrix, meanX, meanY, varX, varY):
 
 def getCoMatrix(rgbImg):
     grayImg = RGBtoGray(rgbImg)
+    sudut = [0,45,90,135]
     
-    coMatrix0 = np.zeros((256,256), dtype=int)
-    # degree 0
+    coMatrix = [[]]*len(sudut)
+    coMatrix[0] = np.zeros((256,256), dtype=int)
+    coMatrix[1] = np.zeros((256,256), dtype=int)
+    coMatrix[2] = np.zeros((256,256), dtype=int)
+    coMatrix[3] = np.zeros((256,256), dtype=int)
+    
+    #coMatrix = [np.zeros((256,256), dtype=int)]*len(sudut)
+        
     for i in range(len(grayImg)):
         for j in range(len(grayImg[i])):
-            if (getValue(i, j+1, grayImg) != -1):
-                coMatrix0[getValue(i,j,grayImg)][getValue(i,j+1,grayImg)] += 1
-    
-    coMatrix45 = np.zeros((256,256), dtype=int)
-    # degree 45
-    for i in range(len(grayImg)):
-        for j in range(len(grayImg[i])):
-            if (getValue(i-1, j+1, grayImg) != -1):
-                coMatrix45[getValue(i,j,grayImg)][getValue(i-1,j+1,grayImg)] += 1
-    
-    coMatrix90 = np.zeros((256,256), dtype=int)
-    # degree 90
-    for i in range(len(grayImg)):
-        for j in range(len(grayImg[i])):
-            if (getValue(i-1, j, grayImg) != -1):
-                coMatrix90[getValue(i,j,grayImg)][getValue(i-1,j,grayImg)] += 1
-    
-    coMatrix135 = np.zeros((256,256), dtype=int)
-    # degree 135
-    for i in range(len(grayImg)):
-        for j in range(len(grayImg[i])):
-            if (getValue(i-1, j-1, grayImg) != -1):
-                coMatrix135[getValue(i,j,grayImg)][getValue(i-1,j-1,grayImg)] += 1
-    return coMatrix0, coMatrix45, coMatrix90, coMatrix135
+            if (getValue(i, j+1, grayImg) != -1 and (getValue(i, j+1, grayImg) < 247 or getValue(i, j, grayImg) < 247)):
+                coMatrix[0][getValue(i,j,grayImg)][getValue(i,j+1,grayImg)] += 1
+            if (getValue(i-1, j+1, grayImg) != -1 and (getValue(i-1, j+1, grayImg) < 247 or getValue(i, j, grayImg) < 247)):
+                coMatrix[1][getValue(i,j,grayImg)][getValue(i-1,j+1,grayImg)] += 1 
+            if (getValue(i-1, j, grayImg) != -1 and (getValue(i-1, j, grayImg) < 247 or getValue(i, j, grayImg) < 247)):
+                coMatrix[2][getValue(i,j,grayImg)][getValue(i-1,j,grayImg)] += 1
+            if (getValue(i-1, j-1, grayImg) != -1 and (getValue(i-1, j-1, grayImg) < 247 or getValue(i, j, grayImg) < 247)):
+                coMatrix[3][getValue(i,j,grayImg)][getValue(i-1,j-1,grayImg)] += 1
+   
+    return coMatrix
 
-def getFeature(coMatrix, sumCoMatrix):
+def getFeature(coMatrix):
+    sumCoMatrix = sumCM(coMatrix)
     probMatrix = getProbMatrix(coMatrix, sumCoMatrix)
     meanXF = meanX(probMatrix)
     meanYF = meanY(probMatrix)
     varXF = variansX(probMatrix, meanXF)
     varYF = variansY(probMatrix, meanYF)
     energyF = energy(probMatrix)
-    entropyF = energy(probMatrix)
+    entropyF = entropy(probMatrix)
     contrastF = contrast(probMatrix)
     dissimilarityF = dissimilarity(probMatrix)
     homogeneityF = homogeneity(probMatrix)
     correlationF = correlation(probMatrix, meanXF, meanYF, varXF, varYF)
     return meanXF, meanYF, varXF, varYF, energyF, entropyF, contrastF, dissimilarityF, homogeneityF, correlationF
 
-#strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Satu Satu\\001_0001_XiaomiRedmiNote4X.jpg'
+#strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Segmentasi_All\\001_0001.jpg'
 #rgbImg = cv2.imread(strFile)
 #rgbImg = resizeImg(rgbImg)
-
+#grayImg = RGBtoGray(rgbImg)
+'''
+rgbImg = []
+rgbImg.append([3,3,3,2,2,2,1,3,3,3])
+rgbImg.append([2,3,1,3,3,3,2,3,1,3])
+rgbImg.append([2,1,2,2,3,3,2,3,2,3])
+rgbImg.append([3,3,1,1,2,3,1,3,2,1])
+rgbImg.append([3,3,2,1,1,3,3,1,2,2])
+rgbImg.append([3,1,3,3,1,1,1,2,1,2])
+rgbImg.append([1,3,3,3,3,2,2,3,3,1])
+rgbImg.append([1,2,2,3,2,1,2,2,1,3])
+rgbImg.append([3,2,3,2,2,1,2,1,2,1])
+rgbImg.append([1,2,2,2,3,3,1,2,3,2])
+coMatrix = getCoMatrix(rgbImg)
+#cv2.imshow('Gray',grayImg)
+#cv2.waitKey(0)
+'''
 #coMatrix0, coMatrix45, coMatrix90, coMatrix135 = getCoMatrix(rgbImg)
 
 #sumCoMatrix = sumCM(coMatrix0)

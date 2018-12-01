@@ -39,40 +39,56 @@ def meanMoment(channel):
     countValue = 0
     for i in range(len(channel)):
         for j in range(len(channel[i])):
-            if(channel[i][j] < 99):
+            #if(channel[i][j] < 99):
+            if(channel[i][j] < 200):
                 sumValue += channel[i][j]
                 countValue += 1
-    return sumValue/countValue
+    if(countValue == 0):
+        return 0
+    else:
+        return sumValue/countValue
 
 def varianceMoment(channel, meanChannel):
     sumValue = 0
     countValue = 0
     for i in range(len(channel)):
         for j in range(len(channel[i])):
-            if(channel[i][j] < 99):
+            #if(channel[i][j] < 99):
+            if(channel[i][j] < 200):
                 sumValue += np.power(channel[i][j] - meanChannel,2)
                 countValue += 1
-    return np.sqrt(sumValue/countValue)
+    if(countValue == 0):
+        return 0
+    else:
+        return np.sqrt(sumValue/countValue)
 
 def skewnessMoment(channel, meanChannel):
-    sumValue = 0
+    sumValue = np.int64(0)
     countValue = 0
     for i in range(len(channel)):
         for j in range(len(channel[i])):
-            if(channel[i][j] < 99):
+            #if(channel[i][j] < 99):
+            if(channel[i][j] < 200):
                 sumValue += np.power(channel[i][j] - meanChannel,3)
                 countValue += 1
-    return np.cbrt(sumValue/countValue)
+    if(countValue == 0):
+        return 0
+    else:
+        return np.cbrt(sumValue/countValue)
 
 def kurtosisMoment(channel, meanChannel):
-    sumValue = 0
+    sumValue = np.int64(0)
     countValue = 0
     for i in range(len(channel)):
         for j in range(len(channel[i])):
-            if(channel[i][j] < 99):
+            #if(channel[i][j] < 99):
+            if(channel[i][j] < 200):
                 sumValue += np.power(channel[i][j] - meanChannel,4)
                 countValue += 1
-    return np.power(sumValue/countValue,0.25)
+    if(countValue == 0):
+        return 0
+    else:
+        return np.power(sumValue/countValue,0.25)
 
 
 
@@ -84,10 +100,13 @@ def convBGRtoLAB(rgbImg):
     #blueNorm = 0
     #greenNorm = 0
     #redNorm = 0
-    #blueNorm = normalize(rgbImgFloat[:,:,0])
-    cv2.normalize(rgbImgFloat[:,:,0],  blueNorm, 0, 1, cv2.NORM_MINMAX)
-    cv2.normalize(rgbImgFloat[:,:,1],  greenNorm, 0, 1, cv2.NORM_MINMAX)
-    cv2.normalize(rgbImgFloat[:,:,2],  redNorm, 0, 1, cv2.NORM_MINMAX)
+    blueNorm = normalize(rgbImgFloat[:,:,0])
+    greenNorm = normalize(rgbImgFloat[:,:,1])
+    redNorm = normalize(rgbImgFloat[:,:,2])
+    
+    #cv2.normalize(rgbImgFloat[:,:,0],  blueNorm, 0, 1, cv2.NORM_MINMAX)
+    #cv2.normalize(rgbImgFloat[:,:,1],  greenNorm, 0, 1, cv2.NORM_MINMAX)
+    #cv2.normalize(rgbImgFloat[:,:,2],  redNorm, 0, 1, cv2.NORM_MINMAX)
     
     
     #CONVERT BGR TO RGB
@@ -129,12 +148,18 @@ def convBGRtoLAB(rgbImg):
             #Lab[i][j][1] = np.cbrt(xyz[i][j][1])
             #Lab[i][j][2] = np.cbrt(xyz[i][j][2])
             Lab[i][j][1] = 500 * (func(xyz[i][j][0]) - func(xyz[i][j][1]))
+            '''
+            if (i == 90 and j == 107):
+                print(func(xyz[i][j][0]))
+                print(func(xyz[i][j][1]))
+                print(func(xyz[i][j][2]))
+            '''
             Lab[i][j][2] = 200 * (func(xyz[i][j][1]) - func(xyz[i][j][2]))
     #print(count)
     return Lab
 
 #Lab = visualize(Lab)
-
+    
 
 #labLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2Lab)
 #xyzLibrary = cv2.cvtColor(rgbImg, cv2.COLOR_BGR2XYZ)
@@ -145,16 +170,18 @@ def getColorMoment(channel):
     meanChannel = meanMoment(channel)
     varChannel = varianceMoment(channel, meanChannel)
     skewChannel = skewnessMoment(channel, meanChannel)
-    #kurtChannel = kurtosisMoment(channel, meanChannel)
-    return meanChannel, varChannel, skewChannel
-    #return meanChannel, varChannel, skewChannel, kurtChannel
+    kurtChannel = kurtosisMoment(channel, meanChannel)
+    #return meanChannel, varChannel, skewChannel
+    return meanChannel, varChannel, skewChannel, kurtChannel
 '''
-strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\Segmentasi\\1.jpg'
+strFile = 'D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\Ahmad Fauzi A _ Akhmad Muzanni S\\All\\020_0002_XiaomiRedmiNote4X.jpg'
 rgbImg = cv2.imread(strFile)
+rgbImg = resizeImg(rgbImg)
 
 
 Lab = convBGRtoLAB(rgbImg)
-
+'''
+'''
 meanL, varL, skewL = getColorMoment(Lab[:,:,0])
 meanA, varA, skewA = getColorMoment(Lab[:,:,1])
 meanB, varB, skewB = getColorMoment(Lab[:,:,2])

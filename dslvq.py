@@ -5,9 +5,43 @@ Created on Fri Sep 21 22:05:22 2018
 @author: USER
 """
 import numpy as np
+import csv
 
-dataClass = [[[1.0,1.0,0.0,0.0],0],[[0.0,0.0,0.0,1.0],1]]
-dataTraining = [[[0.0,0.0,1.0,1.0],1],[[1.0,0.0,0.0,0.0],0],[[0.0,1.0,1.0,0.0],1]]
+#dataClass = [[[1.0,1.0,0.0,0.0],0],[[0.0,0.0,0.0,1.0],1]]
+#dataTraining = [[[0.0,0.0,1.0,1.0],1],[[1.0,0.0,0.0,0.0],0],[[0.0,1.0,1.0,0.0],1]]
+
+def read_csv(file_name):
+    array_2D = []
+    with open(file_name, 'rb') as csvfile:
+        read = csv.reader(csvfile, delimiter=';')
+        for row in read:
+            array_2D.append(row)
+    return array_2D
+
+data1 = read_csv('data/dataColor.csv')
+data2 = read_csv('data/dataTrainColor.csv')
+data3 = read_csv('data/dataTestColor.csv')
+dataTrain = ((np.array(data1[:]))[:,1:-1]).astype(np.float16).tolist()
+dataC = ((np.array(data2[:]))[:,1:-1]).astype(np.float16).tolist()
+dataTesting = ((np.array(data3[:]))[:,1:-1]).astype(np.float16).tolist()
+classDataTrain = ((np.array(data1[:]))[:,-1:]).astype(int).tolist()
+classDataClass = ((np.array(data2[:]))[:,-1:]).astype(int).tolist()
+dataTraining = []
+dataClass = []
+#dataTesting = []
+for i in range(len(dataTrain)):
+    dataArray = []
+    dataArray.append(dataTrain[i])
+    dataArray.append(classDataTrain[i][0])
+    dataTraining.append(dataArray)
+
+for i in range(len(dataC)):
+    dataArray2 = []
+    dataArray2.append(dataC[i])
+    dataArray2.append(classDataClass[i][0])
+    dataClass.append(dataArray2)
+    
+
 
 alpha = 0.1
 beta = 0.1*alpha
@@ -131,14 +165,16 @@ for x in range(iterasi):
                     else:
                         weightMatrix[j][k] = (1+alpha)*weightMatrix[j][k] - alpha*dataTraining[i][0][k]
                 
-                if ( (min(np.divide(dc1,dc2),np.divide(dc2,dc1)) > ((1-epsilon2)*(1+epsilon2))) and ((yc1 == t and yc2 != t) or (yc1 != t and yc2 == t)) ):
+                #if ( (min(np.divide(dc1,dc2),np.divide(dc2,dc1)) > ((1-epsilon2)*(1+epsilon2))) and ((yc1 == t and yc2 != t) or (yc1 != t and yc2 == t)) ):
+                if ( ((yc1 == t and yc2 != t) or (yc1 != t and yc2 == t)) ):
                     wFeature = norm([threshold( (1-alpha)*z + alpha*zw ) for z,zw in zip(wF,wn)])
     alpha = 0.8*alpha
             
 # Validation
-dataTest = [0.0,0.0,1.0,1.0]
+#dataTest = [0.0,0.0,1.0,1.0]
 #dataTest = [1.0,0.0,0.0,0.0]
 #dataTest = [0.0,1.0,1.0,0.0]
+dataTest = dataTesting[2]
 classResult = 0
 minValue = 99999
 for i in range(len(weightMatrix)):
@@ -157,4 +193,5 @@ print(countLVQ3/4)
 #res = [np.abs(a-b) for a,b in zip(dataClass[0][0], dataClass[1][0])]
 #print(norm(res))
     
+
 
