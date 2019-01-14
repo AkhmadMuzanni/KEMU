@@ -50,7 +50,7 @@ pathOutput = "D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\DATA01\\"
 tot = os.listdir(path)
 X = 1
 #kelas = 1
-with open('data/realTraining/data01.csv', 'a') as myfile:
+with open('data/realTraining/data001.csv', 'a') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     for filename in tot:
         if (int(filename[:3]) == 1):

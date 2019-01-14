@@ -4,6 +4,7 @@ Created on Fri Sep 21 22:05:22 2018
 
 @author: USER
 """
+# IMPORT LIBRARY
 import numpy as np
 import csv
 import time
@@ -13,7 +14,8 @@ import os
 #dataClass = [[[1.0,1.0,0.0,0.0],0],[[0.0,0.0,0.0,1.0],1]]
 #dataTraining = [[[0.0,0.0,1.0,1.0],1],[[1.0,0.0,0.0,0.0],0],[[0.0,1.0,1.0,0.0],1]]
 
-alpha_init = 0.1
+# SET PARAMETER VALUES
+alpha_init = 0.2
 alpha = alpha_init
 pengali_alpha = 0.8
 m = 0.1
@@ -21,11 +23,12 @@ beta = m*alpha
 #epsilon= 0.35
 epsilon2= 0.4
 start_time = time.time()
-iterasi_maksimal = 2
+iterasi_maksimal = 10
 alpha_minimal = 0.000001
 iterasi = 1
 #epsilon2= 0.8
 
+# OPEN CSV FILE (INPUT)
 def read_csv(file_name):
     array_2D = []
     with open(file_name, 'rb') as csvfile:
@@ -34,8 +37,9 @@ def read_csv(file_name):
             array_2D.append(row)
     return array_2D
 
+# SPLIT DATA INTO TRAINING DATA AND TESTING DATA
 def buildFold(foldTest):
-    path = "data/realTraining/fold/"
+    path = "dataBaru/"
     #pathOutput = "D:\\KULIAH\\SEMESTER VII\\SKRIPSI - OFFLINE\\DATA01\\"
     tot = os.listdir(path)    
     #kelas = 1
@@ -53,16 +57,17 @@ def buildFold(foldTest):
             dataLatih.extend(fold[i])
     return dataLatih, dataUji
 
+# DO FEATURE SELECTION FROM BOTH TRAINING AND TESTING DATA
 def featureSelection(listFeatures):
     res = np.transpose(listFeatures)
     result = []
-    eliminated = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40] # Warna
+    #eliminated = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40] # Warna
     #eliminated = [41,42,43,44,45,46,47,48,49,50,51,52] # Haralick
     
     #eliminated = [4,5,14,15,24,25,26,34,35] # Relief 
     #eliminated = [1,2,9,10,11,12,19,20,21,22,29,30,31,32,39,40,41,42,44,45,46,48,49] # Korelasi
     #eliminated = [1,2,3,5,6,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,43,46,47,48,49,50,51,52] # CFS
-    #eliminated = [] # Tanpa Seleksi
+    eliminated = [] # Tanpa Seleksi
     for i in range(len(res)):
         if ((i+1) not in eliminated):
             resJ = []
@@ -71,6 +76,7 @@ def featureSelection(listFeatures):
             result.append(resJ)
     return np.transpose(result).tolist()
 
+# DO PCA FEATURE SELECTION FROM BOTH TRAINING AND TESTING DATA
 def getPCAFeatures(listFeatures):    
     res = listFeatures
     result = []    
@@ -89,10 +95,13 @@ def getPCAFeatures(listFeatures):
 
 #data1 = read_csv('data/realTraining/dataTrain80204.csv') # Data Training
 #data3 = read_csv('data/realTraining/dataTest80204.csv') # Data Testing
-data2 = read_csv('data/realTraining/dataClass80204.csv') # Data Class (Vector Reference)
-testFold = [9]
-fold = 'fold9'
 
+# SET REFERENCE VECTOR, TRAINING DATA AND TESTING DATA
+data2 = read_csv('data/dataClass.csv') # Data Class (Vector Reference)
+testFold = [0]
+fold = 'fold0'
+
+# PRINT PARAMETER VALUES
 result = []
 result.append('fold='+str(fold))
 result.append('alpha init = '+str(alpha_init))
@@ -101,13 +110,14 @@ result.append('m = '+str(m))
 result.append('epsilon = '+str(epsilon2))
 result.append('iterasi_maksimal = '+str(iterasi_maksimal))
 result.append('alpha_minimal = '+str(alpha_minimal))
-#result.append('fitur = all')
+result.append('fitur = all')
 #result.append('fitur = tekstur')
-result.append('fitur = warna')
+#result.append('fitur = warna')
 #result.append('waktu = '+str(waktu))
 for i in result:
     print(i)
 
+# SPLIT AND SET TRAINING DATA AND TESTING DATA
 data1, data3 = buildFold(testFold)
 '''
 data1 = read_csv('data/realTraining/dataTrain9010.csv') # Data Training
@@ -129,8 +139,9 @@ data1 = read_csv('datatraining.csv') # Data Training
 data2 = read_csv('refvector.csv') # Data Class (Vector Reference)
 data3 = read_csv('datatesting.csv') # Data Testing
 '''
-dataTrain = ((np.array(data1[:]))[:,1:-1]).astype(np.float64).tolist()
 
+# SPLIT DATA INTO DEPENDENT VARIABLE (CLASS) AND INDEPENDENT VARIABLE (FEATURES)
+dataTrain = ((np.array(data1[:]))[:,1:-1]).astype(np.float64).tolist()
 dataC = ((np.array(data2[:]))[:,1:-1]).astype(np.float64).tolist()
 dataT = ((np.array(data3[:]))[:,1:-1]).astype(np.float64).tolist()
 classDataTrain = ((np.array(data1[:]))[:,-1:]).astype(int).tolist()
@@ -138,12 +149,14 @@ classDataClass = ((np.array(data2[:]))[:,-1:]).astype(int).tolist()
 classDataTest = ((np.array(data3[:]))[:,-1:]).astype(int).tolist()
 dataTraining = []
 dataClass = []
+
 '''
 dataC = getPCAFeatures(dataC)
 dataTrain = getPCAFeatures(dataTrain)
 dataT = getPCAFeatures(dataT)
-
 '''
+
+# DO FEATURE SELECTION
 dataC = featureSelection(dataC)
 dataTrain = featureSelection(dataTrain)
 dataT = featureSelection(dataT)
@@ -183,6 +196,7 @@ countLVQ1 = 0
 countLVQ2 = 0
 countLVQ21 = 0
 countLVQ3 = 0
+
 # ITERATION LVQ
 
 #for x in range(iterasi):
@@ -243,12 +257,18 @@ while(iterasi <= iterasi_maksimal and alpha >= alpha_minimal):
     alpha = pengali_alpha*alpha
     iterasi += 1
 
-            
+
+with open('data/weight.csv', 'a') as myfile:
+    wr = csv.writer(myfile, delimiter=',')
+    for i in range(len(weightMatrix)):
+        result = weightMatrix[i]
+        wr.writerow(result)
+          
 # Testing
 #dataTest = [0.0,0.0,1.0,1.0]
 wrongClass = 0
 #with open('data/realTesting/testingResultMValueAll04.csv', 'a') as myfile:
-with open('data/crossValidation/akurasi/'+fold+'Warna.csv', 'a') as myfile:
+with open('data/'+fold+'Testing.csv', 'a') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     for z in range(len(dataTesting)):
         testing = classDataTest[z][0]-1
@@ -271,8 +291,9 @@ with open('data/crossValidation/akurasi/'+fold+'Warna.csv', 'a') as myfile:
             wrongClass+=1
 akurasi = np.divide(float(len(dataTesting) - wrongClass),float(len(dataTesting)))
 waktu = time.time()-start_time
+print akurasi
 
-
+'''
 with open('data/crossValidation/akurasi/RESULT.csv', 'a') as myfile:
     wr = csv.writer(myfile, delimiter=',')
     result = [fold,akurasi]
@@ -292,5 +313,5 @@ with open('data/crossValidation/akurasi/TIME_COMPUTATION.csv', 'a') as myfile:
     print('iterasi = '+str(iterasi))
     
     wr.writerow(result)
-   
+'''   
 
